@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Андрюха.Translator.Pro</title>
+    <style>
+        body 
+        {
+            background-color: #E6E2DD;
+            text-align: center;
+        }
+        textarea 
+        {
+            
+            height: 500px;
+            width: 40%;
+            overflow: auto; 
+            resize: none;
+            background-color: #373A36;
+            color: #D48166;
+        }
+        select
+        {
+            height: 30px;
+            width: 20%;
+            background-color: #373A36;
+            color: #D48166;
+        }
+        h1
+        {
+            color: #D48166
+        }
+    </style>
+</head>     
+<body>
+    <h1 color="#D48166" >Андрюха.Translator.Pro</h1>
+    <select id="language" onchange="translateWord()">
+        <option value="en">Английский</option>
+        <option value="ru">Русский</option>
+    </select>
+    <br>
+    <br>
+    <textarea id="inputWord" placeholder="Введите слово" oninput="translateWord()" onscroll="syncScroll(this, 'outputWord')"></textarea>  
+    <textarea id="outputWord" readonly onscroll="syncScroll(this, 'inputWord')"></textarea>
+    <script>
+        var apiKey = "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"; 
+
+        function translateWord() {
+            var inputWord = document.getElementById('inputWord').value;
+            var language = document.getElementById('language').value;
+            var responseText = callTranslationAPI(inputWord, language);
+            document.getElementById('outputWord').value = responseText;
+        }
+
+        function callTranslationAPI(inputWord, language) {
+            var url = "https://translation.googleapis.com/language/translate/v2";
+            url += "?q=" + encodeURI(inputWord);
+            url += "&target=" + language;
+            url += "&key=" + apiKey;
+
+            fetch(url, { method: 'GET' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.data && data.data.translations && data.data.translations[0]) {
+                        document.getElementById('outputWord').value = data.data.translations[0].translatedText;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function syncScroll(element, targetId) {
+            var target = document.getElementById(targetId);
+            target.scrollTop = element.scrollTop;
+        }
+    </script>
+</body>
+</html>
